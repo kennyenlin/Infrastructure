@@ -137,6 +137,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	sqlite3 *p_sqlite_module = NULL;
 	int error_code = 0;
 
+    system("del coffee_shop.db");
 	sqlite3_open("coffee_shop.db", &p_sqlite_module);
 
 	if (error_code)
