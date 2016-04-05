@@ -26,14 +26,6 @@ void ParseLine(char *p_cstr, char **pp_tokens, int token_number)
 
     for (int token_index = 1; token_index < token_number; token_index++)
         pp_tokens[token_index] = strtok(NULL, ",\"");
-
-//     char *p_token = strtok(p_cstr, ",\"");
-// 
-//     while (p_token != NULL)
-//     {
-//         tokens.push_back(p_token);
-//         p_token = strtok (NULL, ",\"");
-//     }
 }
 
 #define TOKENS_SIZE 8
@@ -85,10 +77,7 @@ void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
 void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module)
 {
     string line;
-//    list<char *> tokens;
-
     int data_index = 0;
-    //int tokens_size = 8;
 
     while (getline(file_stram, line, '\n'))
     {
@@ -109,21 +98,6 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module)
         ParseLine(p_cstr, pp_tokens, TOKENS_SIZE);
 
         char *p_insert_statement = "INSERT INTO COFFEE_SHOP (ID, LAT, LNG, NAME, PHONE, ADDRESS, CITY, STATE, COUNTRY)";
-
-
-//         for (int i = 0; i < tokens_size; i++)
-//             printf("%s\n", pp_tokens[i]);
-
-//         int token_index = 0;
-// 
-//         while (!tokens.empty())
-//         {
-//             pp_tokens[token_index] = tokens.front();
-//             tokens.pop_front();
-//             token_index++;
-//         }
-// 
-//         printf("token_index = %d\n", token_index);
 
         char insert_statement_buffer[600] = {0};
         sprintf(insert_statement_buffer, "%s VALUES (%d", p_insert_statement, data_index);
@@ -148,17 +122,6 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module)
 
         sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ");");
 
-//         sprintf(insert_statement_buffer, "%s VALUES (%d, %f, %f, %s, %s, %s, %s, %s, %s);", p_insert_statement
-//                                                                                           , data_index
-//                                                                                           , atof(pp_tokens[0])
-//                                                                                           , atof(pp_tokens[1])
-//                                                                                           , pp_tokens[2]
-//                                                                                           , pp_tokens[3]
-//                                                                                           , pp_tokens[4]
-//                                                                                           , pp_tokens[5]
-//                                                                                           , pp_tokens[6]
-//                                                                                           , pp_tokens[7]);
-
         ExecuteStatement(insert_statement_buffer, p_sqlite_module);
 
         printf("%s\n", insert_statement_buffer);
@@ -168,42 +131,6 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module)
 
     }
 }
-
-// void ParseStatement(std::ifstream &file_stram, sqlite3 *p_sqlite_module)
-// {
-//     string line;
-//     list<char *> tokens;
-// 
-//     if (getline(file_stram, line, '\n'))
-//     {
-//         char *p_cstr = new char[line.length() + 1];
-//         strcpy(p_cstr, line.c_str());
-// 
-//         ParseLine(p_cstr, tokens);
-// 
-//         string sql_statement = "CREATE TABLE COFFEE_SHOPS(";
-//         string latitude_postfix = " INT NOT NULL,";
-//         string longtitude_postfix = " INT NOT NULL,";
-//         string name_postfix = " CHAR[100] NOT NULL,";
-//         string phone_postfix = " INT NOT NULL,";
-//         string address_postfix = " CHAR[200] NOT NULL,";
-//         string city_postfix = " CHAR[200] NOT NULL,";
-//         string county_post_fix = " CHAR[200] NOT NULL";
-// 
-// 
-//         //printf("tokens number = %d\n", tokens.size())
-// 
-//         while (!tokens.empty())
-//         {
-//             printf("%s@", tokens.front());
-//             tokens.pop_front();
-//         }
-//         printf("\n");
-// 
-//         delete [] p_cstr;
-// 
-//     }
-// }
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -242,52 +169,6 @@ int _tmain(int argc, _TCHAR* argv[])
     getline(file_stream, line, '\n');
 
     ParseData(file_stream, p_sqlite_module);
-
-//     char *p_error_message = NULL;
-// 
-//     error_code = sqlite3_exec(p_sqlite_module, p_sql_statement, callback, 0, &p_error_message);
-//     if (error_code != SQLITE_OK)
-//     {
-//         fprintf(stderr, "SQL error: %s\n", p_error_message);
-//         sqlite3_free(p_error_message);
-//     }
-//     else
-//     {
-//         fprintf(stdout, "Table created successfully\n");
-//     }
-
-//    ParseStatement(file_stream, p_sqlite_module);
-
-// 	std::string line;
-// 
-// 	std::list<char *> tokens;
-// 
-// 	char *p_tokens = NULL;
-// 
-// 	while(std::getline(file_stream, line, '\n'))
-// 	{
-// 		char *cstr = new char[line.length() + 1];
-// 		strcpy(cstr, line.c_str());
-// 
-// 		p_tokens = strtok(cstr, ",\"");
-// 
-// 		while (p_tokens != NULL)
-// 		{
-// 			tokens.push_back(p_tokens);
-// 			//printf ("%s", p_tokens);
-// 			p_tokens = strtok (NULL, ",\"");
-// 			//tokens.push_back(p_tokens);
-// 		}
-// 
-// 		while (!tokens.empty())
-// 		{
-// 			printf("%s@", tokens.front());
-// 			tokens.pop_front();
-// 		}
-// 		printf("\n");
-// 
-// 		delete [] cstr;
-// 	}
 
 	sqlite3_close(p_sqlite_module);
 
