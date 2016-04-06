@@ -121,10 +121,10 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
    }
 }
 
-bool isFloat(char *p_string)
+bool isDouble(char *p_string)
 {
     istringstream prepared_stream(p_string);
-    float conversion = 0.f;
+    double conversion = 0.0;
 
     prepared_stream >> noskipws >> conversion;
 
@@ -154,8 +154,8 @@ int main(int argc, char* argv[])
                 strcmp(p_search_longtitude[0], "LNG") != 0 ||
                 p_search_latitude[1] == NULL ||
                 p_search_longtitude[1] == NULL ||
-                !isFloat(p_search_latitude[1]) ||
-                !isFloat(p_search_longtitude[1]))
+                !isDouble(p_search_latitude[1]) ||
+                !isDouble(p_search_longtitude[1]))
             {
                 printf("parameter is not correct\n");
                 return 0;
@@ -179,8 +179,8 @@ int main(int argc, char* argv[])
                 p_search_latitude[1] == NULL ||
                 p_search_longtitude[1] == NULL ||
                 p_search_partial_name[1] == NULL||
-                !isFloat(p_search_latitude[1]) ||
-                !isFloat(p_search_longtitude[1]))
+                !isDouble(p_search_latitude[1]) ||
+                !isDouble(p_search_longtitude[1]))
             {
                 printf("parameter is not correct\n");
                 return 0;
