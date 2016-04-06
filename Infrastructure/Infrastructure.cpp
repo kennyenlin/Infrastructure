@@ -7,6 +7,7 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -131,8 +132,79 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
     }
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+bool isFloat(char *p_string)
 {
+    istringstream prepared_stream(p_string);
+    float conversion = 0.f;
+
+    prepared_stream >> noskipws >> conversion;
+
+    return prepared_stream.eof() && !prepared_stream.fail();
+}
+
+int main(int argc, char* argv[])
+{
+    char *p_latitude = "-30";
+    char *p_longitude = "150";
+
+    char *p_search_latitude[2] = {NULL};
+    char *p_search_longtitude[2] = {NULL};
+    char *p_search_partial_name[2] = {NULL};
+
+    switch(argc)
+    {
+        case 3:
+        {
+            p_search_latitude[0] = strtok(argv[1], "=");
+            p_search_latitude[1] = strtok(NULL, "=");
+
+            p_search_longtitude[0] = strtok(argv[2], "=");
+            p_search_longtitude[1] = strtok(NULL, "=");
+
+            if (strcmp(p_search_latitude[0], "LAT") != 0 ||
+                strcmp(p_search_longtitude[0], "LNG") != 0 ||
+                p_search_latitude[1] == NULL ||
+                p_search_longtitude[1] == NULL ||
+                !isFloat(p_search_latitude[1]) ||
+                !isFloat(p_search_longtitude[1]))
+            {
+                printf("parameter is not correct\n");
+                return 0;
+            }
+        }
+        break;
+        case 4:
+        {
+            p_search_latitude[0] = strtok(argv[1], "=");
+            p_search_latitude[1] = strtok(NULL, "=");
+
+            p_search_longtitude[0] = strtok(argv[2], "=");
+            p_search_longtitude[1] = strtok(NULL, "=");
+
+            p_search_partial_name[0] = strtok(argv[3], "=");
+            p_search_partial_name[1] = strtok(NULL, "=");
+
+            if (strcmp(p_search_latitude[0], "LAT") != 0 ||
+                strcmp(p_search_longtitude[0], "LNG") != 0 ||
+                strcmp(p_search_partial_name[0], "NAME") != 0 ||
+                p_search_latitude[1] == NULL ||
+                p_search_longtitude[1] == NULL ||
+                p_search_partial_name[1] == NULL||
+                !isFloat(p_search_latitude[1]) ||
+                !isFloat(p_search_longtitude[1]))
+            {
+                printf("parameter is not correct\n");
+                return 0;
+            }
+        }
+        break;
+        default:
+        {
+            printf("too many parameters");
+            return 0;
+        }
+    }
+
 	sqlite3 *p_sqlite_module = NULL;
 	int error_code = 0;
 
@@ -177,12 +249,24 @@ int _tmain(int argc, _TCHAR* argv[])
 
     ParseData(file_stream_2, p_sqlite_module, element_index);
 
-	sqlite3_close(p_sqlite_module);
+    char select_statement[600] = {0};
 
-	system("pause");
+    if (argc == 3)
+        sprintf(select_statement, "SELECT * FROM COFFEE_SHOP ORDER BY ((%s - LAT) * (%s - LAT) + (%s - LNG) * (%s - LNG)) ASC", p_search_latitude[1]
+                                                                                                                              , p_search_latitude[1]
+                                                                                                                              , p_search_longtitude[1]
+                                                                                                                              , p_search_longtitude[1]);
+    else if (argc == 4)
+        sprintf(select_statement, "SELECT * FROM COFFEE_SHOP WHERE NAME LIKE %s%s%s ORDER BY ((%s - LAT) * (%s - LAT) + (%s - LNG) * (%s - LNG)) ASC", "'%"
+                                                                                                                                                     , p_search_partial_name[1]
+                                                                                                                                                     , "%'"
+                                                                                                                                                     , p_search_latitude[1]
+                                                                                                                                                     , p_search_latitude[1]
+                                                                                                                                                     , p_search_longtitude[1]
+                                                                                                                                                     , p_search_longtitude[1]);
+    ExecuteStatement(select_statement, p_sqlite_module);
+
+	sqlite3_close(p_sqlite_module);
 
 	return 0;
 }
-
-
-
