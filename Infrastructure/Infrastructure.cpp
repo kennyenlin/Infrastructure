@@ -72,10 +72,6 @@ void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
         fprintf(stderr, "SQL error: %s\n", p_error_message);
         sqlite3_free(p_error_message);
     }
-    else
-    {
-        fprintf(stdout, "Table created successfully\n");
-    }
 }
 
 void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index)
