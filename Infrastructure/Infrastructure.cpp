@@ -133,9 +133,6 @@ bool isDouble(char *p_string)
 
 int main(int argc, char* argv[])
 {
-    char *p_latitude = "-30";
-    char *p_longitude = "150";
-
     char *p_search_latitude[2] = {NULL};
     char *p_search_longtitude[2] = {NULL};
     char *p_search_partial_name[2] = {NULL};
