@@ -139,6 +139,19 @@ int main(int argc, char* argv[])
 
     switch(argc)
     {
+        case 2:
+        {
+            p_search_partial_name[0] = strtok(argv[1], "=");
+            p_search_partial_name[1] = strtok(NULL, "=");
+
+            if (strcmp(p_search_partial_name[0], "NAME") != 0 ||
+                p_search_partial_name[1] == NULL)
+            {
+                printf("parameter NAME is not correct\n");
+                return 0;
+            }
+        }
+        break;
         case 3:
         {
             p_search_latitude[0] = strtok(argv[1], "=");
@@ -237,7 +250,11 @@ int main(int argc, char* argv[])
 
     char select_statement[600] = {0};
 
-    if (argc == 3)
+    if (argc == 2)
+        sprintf(select_statement, "SELECT * FROM COFFEE_SHOP WHERE NAME LIKE %s%s%s", "'%"
+                                                                                    , p_search_partial_name[1]
+                                                                                    , "%'");
+    else if (argc == 3)
         sprintf(select_statement, "SELECT * FROM COFFEE_SHOP ORDER BY ((%s - LAT) * (%s - LAT) + (%s - LNG) * (%s - LNG)) ASC", p_search_latitude[1]
                                                                                                                               , p_search_latitude[1]
                                                                                                                               , p_search_longtitude[1]
