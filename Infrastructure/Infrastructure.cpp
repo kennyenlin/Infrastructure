@@ -150,7 +150,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 0;
 	}
 
-	std::ifstream file_stream("coffee_shops-1.csv");
+	ifstream file_stream("coffee_shops-1.csv");
 
     char *p_sql_statement = "CREATE TABLE COFFEE_SHOP("  \
                             "ID INT PRIMARY KEY       NOT NULL," \
