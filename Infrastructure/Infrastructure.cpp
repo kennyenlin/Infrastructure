@@ -21,40 +21,43 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName)
     return 0;
 }
 
-void ParseLine(char *p_cstr, char **pp_tokens, int token_number)
-{
-    pp_tokens[0] = strtok(p_cstr, ",\"");
-
-    for (int token_index = 1; token_index < token_number; token_index++)
-        pp_tokens[token_index] = strtok(NULL, ",\"");
-}
-
 #define TOKENS_SIZE 8
 
-void IsNullElement(char *p_cstr, int length, bool is_null_element[TOKENS_SIZE])
+void ParseLine(char *p_cstr, list<char*> &tokens, bool is_null_element[TOKENS_SIZE])
 {
-    int seperation_location[TOKENS_SIZE - 1] = {0};
+    int token_index = 0;
+    char *p_temp = NULL;
 
-    int seperation_index = 0;
-    for (int i = 0; i < length; i++)
+    p_temp = strtok(p_cstr, ",");
+    tokens.push_back(p_temp);
+
+    p_temp = strtok(NULL, ",\"");
+    tokens.push_back(p_temp);
+
+    token_index += 2;
+
+    p_temp = strtok(NULL, "\"");
+    while(p_temp != NULL)
     {
-        if (p_cstr[i] == ',')
+        if (p_temp[0] != ',')
         {
-            seperation_location[seperation_index] = i;
-            seperation_index ++;
+            tokens.push_back(p_temp);
+            token_index++;
         }
+        else
+        {
+            for (int i = 1; i < strlen(p_temp) + 1; i++)
+            {
+                if(p_temp[i] == ',')
+                {
+                    is_null_element[token_index] = true;
+                    token_index++;
+                }
+            }
+
+        }
+        p_temp = strtok(NULL, "\"");
     }
-
-    int seperation_difference[TOKENS_SIZE] = {0};
-
-    seperation_difference[0] = seperation_location[0] - (-1);
-
-    for (int i = 1; i < TOKENS_SIZE; i++)
-        seperation_difference[i] = seperation_location[i] - seperation_location[i - 1];
-
-    for (int i = 0; i < TOKENS_SIZE; i++)
-        if (seperation_difference[i] == 1)
-            is_null_element[i] = true;
 }
 
 void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
@@ -88,31 +91,25 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
 
         bool is_null_element[TOKENS_SIZE] = {false};
 
-        IsNullElement(p_cstr, line.length() + 1, is_null_element);
+        list<char *> tokens;
 
-        char **pp_tokens = NULL;
-        pp_tokens = new char*[TOKENS_SIZE];
-        for (int i = 0; i < TOKENS_SIZE; i++)
-            pp_tokens[i] = NULL;
-
-        ParseLine(p_cstr, pp_tokens, TOKENS_SIZE);
+        ParseLine(p_cstr, tokens, is_null_element);
 
         char *p_insert_statement = "INSERT INTO COFFEE_SHOP (ID, LAT, LNG, NAME, PHONE, ADDRESS, CITY, STATE, COUNTRY)";
 
         char insert_statement_buffer[600] = {0};
         sprintf(insert_statement_buffer, "%s VALUES (%d", p_insert_statement, element_index);
 
-        int valid_token_index = 0;
         for (int i = 0; i < TOKENS_SIZE; i++)
         {
             if (!is_null_element[i])
             {
                 if (i == 0 || i == 1)
-                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", %f", atof(pp_tokens[valid_token_index]));
+                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", %f", atof(tokens.front()));
                 else
-                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", '%s'", pp_tokens[valid_token_index]);
+                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", \"%s\"", tokens.front());
 
-                valid_token_index ++;
+                tokens.pop_front();
             }
             else
             {
@@ -122,14 +119,10 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
 
         sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ");");
 
-        ExecuteStatement(insert_statement_buffer, p_sqlite_module);
-
-        printf("%s\n", insert_statement_buffer);
+        ExecuteStatement(insert_statement_buffer, p_sqlite_module);;
 
         delete [] p_cstr;
-        delete [] pp_tokens;
-
-    }
+   }
 }
 
 bool isFloat(char *p_string)
