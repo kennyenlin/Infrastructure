@@ -74,14 +74,13 @@ void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
     }
 }
 
-void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module)
+void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index)
 {
     string line;
-    int data_index = 0;
 
     while (getline(file_stram, line, '\n'))
     {
-        data_index++;
+        element_index++;
 
         char *p_cstr = new char[line.length() + 1];
         strcpy(p_cstr, line.c_str());
@@ -100,7 +99,7 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module)
         char *p_insert_statement = "INSERT INTO COFFEE_SHOP (ID, LAT, LNG, NAME, PHONE, ADDRESS, CITY, STATE, COUNTRY)";
 
         char insert_statement_buffer[600] = {0};
-        sprintf(insert_statement_buffer, "%s VALUES (%d", p_insert_statement, data_index);
+        sprintf(insert_statement_buffer, "%s VALUES (%d", p_insert_statement, element_index);
 
         int valid_token_index = 0;
         for (int i = 0; i < TOKENS_SIZE; i++)
@@ -150,26 +149,33 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 0;
 	}
 
-	ifstream file_stream("coffee_shops-1.csv");
-
     char *p_sql_statement = "CREATE TABLE COFFEE_SHOP("  \
                             "ID INT PRIMARY KEY       NOT NULL," \
                             "LAT            REAL      NOT NULL," \
                             "LNG            REAL      NOT NULL," \
                             "NAME           CHAR(50)  NOT NULL," \
-                            "PHONE          CHAR(50)," \
-                            "ADDRESS        CHAR(200) NOT NULL," \
-                            "CITY           CHAR(50)  NOT NULL," \
+                            "PHONE          CHAR(50)          ," \
+                            "ADDRESS        CHAR(200)         ," \
+                            "CITY           CHAR(50)          ," \
                             "STATE          CHAR(50)  NOT NULL," \
                             "COUNTRY        CHAR(50)  NOT NULL);";
 
     ExecuteStatement(p_sql_statement, p_sqlite_module);
     
     string line;
+    int element_index = 0;
 
-    getline(file_stream, line, '\n');
+    ifstream file_stream_1("coffee_shops-1.csv");
 
-    ParseData(file_stream, p_sqlite_module);
+    getline(file_stream_1, line, '\n');
+
+    ParseData(file_stream_1, p_sqlite_module, element_index);
+
+    ifstream file_stream_2("coffee_shops-2.csv");
+
+    getline(file_stream_2, line, '\n');
+
+    ParseData(file_stream_2, p_sqlite_module, element_index);
 
 	sqlite3_close(p_sqlite_module);
 
