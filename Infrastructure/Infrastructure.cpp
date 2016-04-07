@@ -237,7 +237,7 @@ bool ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
     return true;
 }
 
-void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index)
+bool ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index)
 {
     string line;
 
@@ -252,7 +252,11 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
 
         list<string> tokens;
 
-        ParseLine(p_cstr, tokens, is_null_element);
+        if (!ParseLine(p_cstr, tokens, is_null_element))
+        {
+            delete [] p_cstr;
+            return false;
+        }
 
         char *p_insert_statement = "INSERT INTO COFFEE_SHOP (ID, LAT, LNG, NAME, PHONE, ADDRESS, CITY, STATE, COUNTRY)";
 
@@ -278,10 +282,16 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
 
         sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ");");
 
-        ExecuteStatement(insert_statement_buffer, p_sqlite_module);;
+        if (!ExecuteStatement(insert_statement_buffer, p_sqlite_module))
+        {
+            delete [] p_cstr;
+            return false;
+        }
 
         delete [] p_cstr;
     }
+
+    return true;
 }
 
 bool isDouble(char *p_string)

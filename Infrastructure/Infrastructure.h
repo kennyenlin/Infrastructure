@@ -12,6 +12,6 @@ bool ParseLine(char *p_cstr, std::list<std::string> &tokens, bool is_null_elemen
 
 bool ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module);
 
-void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index);
+bool ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index);
 
 bool isDouble(char *p_string);
