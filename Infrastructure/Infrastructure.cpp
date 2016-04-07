@@ -172,15 +172,21 @@ bool CreateDatabase(sqlite3 **pp_sqlite_module)
     return true;
 }
 
-bool ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKENS_SIZE])
+bool ParseLine(char *p_cstr, std::list<string> &tokens, bool is_null_element[TOKENS_SIZE])
 {
     if (p_cstr == NULL)
         return false;
 
+    char *p_local = NULL;
+
+    p_local = new char[strlen(p_cstr) + 1];
+
+     strncpy(p_local, p_cstr, strlen(p_cstr) + 1);
+
     int token_index = 0;
     char *p_temp = NULL;
 
-    p_temp = strtok(p_cstr, ",");
+    p_temp = strtok(p_local, ",");
     tokens.push_back(p_temp);
 
     p_temp = strtok(NULL, ",\"");
@@ -241,7 +247,7 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
 
         bool is_null_element[TOKENS_SIZE] = {false};
 
-        list<char *> tokens;
+        list<string> tokens;
 
         ParseLine(p_cstr, tokens, is_null_element);
 
@@ -255,9 +261,9 @@ void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element
             if (!is_null_element[i])
             {
                 if (i == 0 || i == 1)
-                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", %f", atof(tokens.front()));
+                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", %f", atof(tokens.front().c_str()));
                 else
-                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", \"%s\"", tokens.front());
+                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", \"%s\"", tokens.front().c_str());
 
                 tokens.pop_front();
             }
