@@ -2,11 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "sqlite3.h"
+#include "Infrastructure.h"
 #include <iostream>
 #include <string>
-#include <list>
-#include <fstream>
 #include <sstream>
 
 using namespace std;
@@ -21,116 +19,6 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName)
     }
     printf("\n");
     return 0;
-}
-
-#define TOKENS_SIZE 8
-
-void ParseLine(char *p_cstr, list<char*> &tokens, bool is_null_element[TOKENS_SIZE])
-{
-    int token_index = 0;
-    char *p_temp = NULL;
-
-    p_temp = strtok(p_cstr, ",");
-    tokens.push_back(p_temp);
-
-    p_temp = strtok(NULL, ",\"");
-    tokens.push_back(p_temp);
-
-    token_index += 2;
-
-    p_temp = strtok(NULL, "\"");
-    while(p_temp != NULL)
-    {
-        if (p_temp[0] != ',')
-        {
-            tokens.push_back(p_temp);
-            token_index++;
-        }
-        else
-        {
-            for (int i = 1; i < strlen(p_temp) + 1; i++)
-            {
-                if(p_temp[i] == ',')
-                {
-                    is_null_element[token_index] = true;
-                    token_index++;
-                }
-            }
-
-        }
-        p_temp = strtok(NULL, "\"");
-    }
-}
-
-void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
-{
-    int error_code = 0;
-
-    char *p_error_message = NULL;
-
-    error_code = sqlite3_exec(p_sqlite_module, p_sql_statement, callback, 0, &p_error_message);
-    if (error_code != SQLITE_OK)
-    {
-        fprintf(stderr, "SQL error: %s\n", p_error_message);
-        sqlite3_free(p_error_message);
-    }
-}
-
-void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index)
-{
-    string line;
-
-    while (getline(file_stram, line, '\n'))
-    {
-        element_index++;
-
-        char *p_cstr = new char[line.length() + 1];
-        strcpy(p_cstr, line.c_str());
-
-        bool is_null_element[TOKENS_SIZE] = {false};
-
-        list<char *> tokens;
-
-        ParseLine(p_cstr, tokens, is_null_element);
-
-        char *p_insert_statement = "INSERT INTO COFFEE_SHOP (ID, LAT, LNG, NAME, PHONE, ADDRESS, CITY, STATE, COUNTRY)";
-
-        char insert_statement_buffer[600] = {0};
-        sprintf(insert_statement_buffer, "%s VALUES (%d", p_insert_statement, element_index);
-
-        for (int i = 0; i < TOKENS_SIZE; i++)
-        {
-            if (!is_null_element[i])
-            {
-                if (i == 0 || i == 1)
-                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", %f", atof(tokens.front()));
-                else
-                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", \"%s\"", tokens.front());
-
-                tokens.pop_front();
-            }
-            else
-            {
-                sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", NULL");
-            }
-        }
-
-        sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ");");
-
-        ExecuteStatement(insert_statement_buffer, p_sqlite_module);;
-
-        delete [] p_cstr;
-   }
-}
-
-bool isDouble(char *p_string)
-{
-    istringstream prepared_stream(p_string);
-    double conversion = 0.0;
-
-    prepared_stream >> noskipws >> conversion;
-
-    return prepared_stream.eof() && !prepared_stream.fail();
 }
 
 int main(int argc, char* argv[])
@@ -274,4 +162,112 @@ int main(int argc, char* argv[])
 	sqlite3_close(p_sqlite_module);
 
 	return 0;
+}
+
+void ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKENS_SIZE])
+{
+    int token_index = 0;
+    char *p_temp = NULL;
+
+    p_temp = strtok(p_cstr, ",");
+    tokens.push_back(p_temp);
+
+    p_temp = strtok(NULL, ",\"");
+    tokens.push_back(p_temp);
+
+    token_index += 2;
+
+    p_temp = strtok(NULL, "\"");
+    while(p_temp != NULL)
+    {
+        if (p_temp[0] != ',')
+        {
+            tokens.push_back(p_temp);
+            token_index++;
+        }
+        else
+        {
+            for (int i = 1; i < strlen(p_temp) + 1; i++)
+            {
+                if(p_temp[i] == ',')
+                {
+                    is_null_element[token_index] = true;
+                    token_index++;
+                }
+            }
+
+        }
+        p_temp = strtok(NULL, "\"");
+    }
+}
+
+void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
+{
+    int error_code = 0;
+
+    char *p_error_message = NULL;
+
+    error_code = sqlite3_exec(p_sqlite_module, p_sql_statement, callback, 0, &p_error_message);
+    if (error_code != SQLITE_OK)
+    {
+        fprintf(stderr, "SQL error: %s\n", p_error_message);
+        sqlite3_free(p_error_message);
+    }
+}
+
+void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index)
+{
+    string line;
+
+    while (getline(file_stram, line, '\n'))
+    {
+        element_index++;
+
+        char *p_cstr = new char[line.length() + 1];
+        strcpy(p_cstr, line.c_str());
+
+        bool is_null_element[TOKENS_SIZE] = {false};
+
+        list<char *> tokens;
+
+        ParseLine(p_cstr, tokens, is_null_element);
+
+        char *p_insert_statement = "INSERT INTO COFFEE_SHOP (ID, LAT, LNG, NAME, PHONE, ADDRESS, CITY, STATE, COUNTRY)";
+
+        char insert_statement_buffer[600] = {0};
+        sprintf(insert_statement_buffer, "%s VALUES (%d", p_insert_statement, element_index);
+
+        for (int i = 0; i < TOKENS_SIZE; i++)
+        {
+            if (!is_null_element[i])
+            {
+                if (i == 0 || i == 1)
+                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", %f", atof(tokens.front()));
+                else
+                    sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", \"%s\"", tokens.front());
+
+                tokens.pop_front();
+            }
+            else
+            {
+                sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ", NULL");
+            }
+        }
+
+        sprintf(insert_statement_buffer + strlen(insert_statement_buffer), ");");
+
+        ExecuteStatement(insert_statement_buffer, p_sqlite_module);;
+
+        delete [] p_cstr;
+    }
+}
+
+bool isDouble(char *p_string)
+{
+    istringstream prepared_stream(p_string);
+    double conversion = 0.0;
+
+    prepared_stream >> noskipws >> conversion;
+
+    return prepared_stream.eof() && !prepared_stream.fail();
 }
