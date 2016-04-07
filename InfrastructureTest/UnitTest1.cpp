@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Infrastructure/Infrastructure.h"
 
 using namespace System;
 using namespace System::Text;
