@@ -172,8 +172,11 @@ bool CreateDatabase(sqlite3 **pp_sqlite_module)
     return true;
 }
 
-void ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKENS_SIZE])
+bool ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKENS_SIZE])
 {
+    if (p_cstr == NULL)
+        return false;
+
     int token_index = 0;
     char *p_temp = NULL;
 
@@ -207,6 +210,8 @@ void ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKE
         }
         p_temp = strtok(NULL, "\"");
     }
+
+    return true;
 }
 
 void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
