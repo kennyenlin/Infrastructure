@@ -95,20 +95,8 @@ int main(int argc, char* argv[])
     }
 
 	sqlite3 *p_sqlite_module = NULL;
-	int error_code = 0;
 
-    system("del coffee_shop.db");
-	sqlite3_open("coffee_shop.db", &p_sqlite_module);
-
-	if (error_code)
-	{
-		fprintf(stderr, "cannot open database: %s\n", sqlite3_errmsg(p_sqlite_module));
-		return 0;
-	}else if (NULL  == p_sqlite_module)
-	{
-		fprintf(stderr, "no instance for database");
-		return 0;
-	}
+    CreateDatabase(&p_sqlite_module);
 
     char *p_sql_statement = "CREATE TABLE COFFEE_SHOP("  \
                             "ID INT PRIMARY KEY       NOT NULL," \
@@ -162,6 +150,26 @@ int main(int argc, char* argv[])
 	sqlite3_close(p_sqlite_module);
 
 	return 0;
+}
+
+int CreateDatabase(sqlite3 **pp_sqlite_module)
+{
+    int error_code = 0;
+
+    system("del coffee_shop.db");
+    sqlite3_open("coffee_shop.db", pp_sqlite_module);
+
+    if (error_code)
+    {
+        fprintf(stderr, "cannot open database: %s\n", sqlite3_errmsg(*pp_sqlite_module));
+        return 0;
+    }else if (NULL  == *pp_sqlite_module)
+    {
+        fprintf(stderr, "no instance for database");
+        return 0;
+    }
+
+    return 1;
 }
 
 void ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKENS_SIZE])

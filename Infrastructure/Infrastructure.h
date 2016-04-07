@@ -6,6 +6,8 @@
 
 #define TOKENS_SIZE 8
 
+int CreateDatabase(sqlite3 **pp_sqlite_module);
+
 void ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKENS_SIZE]);
 
 void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module);
