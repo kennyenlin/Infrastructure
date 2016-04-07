@@ -54,11 +54,11 @@ namespace InfrastructureTest
 		#pragma endregion 
 
 		[TestMethod]
-		void TestMethod1()
+		void TestMethod_CreateDatabase()
 		{
-			//
-			// TODO: Add test logic	here
-			//
+            sqlite3 *p_sqlite_module = NULL;
+            Assert::IsTrue(CreateDatabase(&p_sqlite_module));
+            Assert::IsTrue(CreateDatabase(&p_sqlite_module));
 		};
 	};
 }
