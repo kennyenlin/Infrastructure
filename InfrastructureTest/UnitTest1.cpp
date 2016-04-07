@@ -149,5 +149,12 @@ namespace InfrastructureTest
 
             Assert::IsTrue(ParseData(file_stream_1, p_sqlite_module, element_index));
         };
+
+        [TestMethod]
+        void TestMethod_IsDouble()
+        {
+            Assert::IsTrue(isDouble("56.88"));
+            Assert::IsFalse(isDouble("56.sd8"));
+        };
 	};
 }
