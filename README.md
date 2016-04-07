@@ -33,3 +33,9 @@ User Guide
 6. you could replace the number and partial name but the format should be like above. <br>
 7. LAT, LNG, NAME are fixed. Any changes would not be allowed to query. Also, there is no space or other notations beside "=" <br>
 8. result would show in order of distance if location is provided. If not, data would show in the order of database. Also, If partial name is provided, result would be filtered <br>
+
+Unit Test
+-------
+1. After compiling, please search menu bar on IDE and there is a tab called "Test" <br>
+2. Click Test->Windows->TestView
+3. There are several unit tests for different functions. Please move anchor on the function name and click right button of mouse. Choose "Run Selection" to start unit test
