@@ -94,5 +94,30 @@ namespace InfrastructureTest
                            is_null_element[6] == false &&
                            is_null_element[7] == false );
         };
+
+        [TestMethod]
+        void TestMethod_ExecuteStatement()
+        {
+            sqlite3 *p_sqlite_module = NULL;
+            Assert::IsTrue(CreateDatabase(&p_sqlite_module));
+
+            char *p_sql_statement = "CREATE TABLE COFFEE_SHOP("  \
+                                    "ID INT PRIMARY KEY       NOT NULL," \
+                                    "LAT            REAL      NOT NULL," \
+                                    "LNG            REAL      NOT NULL," \
+                                    "NAME           CHAR(50)  NOT NULL," \
+                                    "PHONE          CHAR(50)          ," \
+                                    "ADDRESS        CHAR(200)         ," \
+                                    "CITY           CHAR(50)          ," \
+                                    "STATE          CHAR(50)  NOT NULL," \
+                                    "COUNTRY        CHAR(50)  NOT NULL);";
+            Assert::IsTrue(ExecuteStatement(p_sql_statement, p_sqlite_module));
+
+            char *p_insert_statement = "INSERT INTO COFFEE_SHOP (ID, LAT, LNG, NAME, PHONE, ADDRESS, CITY, STATE, COUNTRY) VALUES (11, -37.863216, 145.077914, \"Milano Espresso Bar\", NULL, \"170 High St.\", \"Ashburton\", \"VIC\", \"Australia\");";
+
+            Assert::IsTrue(ExecuteStatement(p_insert_statement, p_sqlite_module));
+
+            sqlite3_close(p_sqlite_module);
+        };
 	};
 }
