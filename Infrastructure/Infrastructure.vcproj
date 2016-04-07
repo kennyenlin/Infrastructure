@@ -175,10 +175,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\sqlite3.c"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -206,10 +202,6 @@
 			>
 			<File
 				RelativePath=".\sqlite3.h"
-				>
-			</File>
-			<File
-				RelativePath=".\sqlite3ext.h"
 				>
 			</File>
 			<File

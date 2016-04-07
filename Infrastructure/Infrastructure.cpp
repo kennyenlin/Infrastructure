@@ -11,6 +11,8 @@
 
 using namespace std;
 
+#pragma comment(lib, "../lib/sqlite3.lib")
+
 static int callback(void *NotUsed, int argc, char **argv, char **azColName)
 {
     int i;
