@@ -59,8 +59,12 @@ namespace InfrastructureTest
 		{
             sqlite3 *p_sqlite_module = NULL;
             Assert::IsTrue(CreateDatabase(&p_sqlite_module));
+            sqlite3_close(p_sqlite_module);
+
+            p_sqlite_module = NULL;
             Assert::IsTrue(CreateDatabase(&p_sqlite_module));
-		};
+		    sqlite3_close(p_sqlite_module);
+        };
 
         [TestMethod]
         void TestMethod_ParseLine()
@@ -148,6 +152,8 @@ namespace InfrastructureTest
             getline(file_stream_1, line, '\n');
 
             Assert::IsTrue(ParseData(file_stream_1, p_sqlite_module, element_index));
+
+            sqlite3_close(p_sqlite_module);
         };
 
         [TestMethod]
