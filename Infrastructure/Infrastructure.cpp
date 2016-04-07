@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-int CreateDatabase(sqlite3 **pp_sqlite_module)
+bool CreateDatabase(sqlite3 **pp_sqlite_module)
 {
     int error_code = 0;
 
@@ -162,14 +162,14 @@ int CreateDatabase(sqlite3 **pp_sqlite_module)
     if (error_code)
     {
         fprintf(stderr, "cannot open database: %s\n", sqlite3_errmsg(*pp_sqlite_module));
-        return 0;
+        return false;
     }else if (NULL  == *pp_sqlite_module)
     {
         fprintf(stderr, "no instance for database");
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 void ParseLine(char *p_cstr, std::list<char*> &tokens, bool is_null_element[TOKENS_SIZE])
