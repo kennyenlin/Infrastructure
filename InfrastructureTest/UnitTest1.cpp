@@ -60,5 +60,39 @@ namespace InfrastructureTest
             Assert::IsTrue(CreateDatabase(&p_sqlite_module));
             Assert::IsTrue(CreateDatabase(&p_sqlite_module));
 		};
+
+        [TestMethod]
+        void TestMethod_ParseLine()
+        {
+            char *p_cstr = "-37.863216,145.077914,\"Milano Espresso Bar\",,\"170 High St.\",\"Ashburton\",\"VIC\",\"Australia\"";
+            std::list<std::string> tokens;
+            bool is_null_element[TOKENS_SIZE] = {false};
+
+            Assert::IsTrue(ParseLine(p_cstr, tokens, is_null_element));
+
+            Assert::IsTrue(strcmp("-37.863216", tokens.front().c_str()) == 0);
+            tokens.pop_front();
+            Assert::IsTrue(strcmp("145.077914", tokens.front().c_str()) == 0);
+            tokens.pop_front();
+            Assert::IsTrue(strcmp("Milano Espresso Bar", tokens.front().c_str()) == 0);
+            tokens.pop_front();
+            Assert::IsTrue(strcmp("170 High St.", tokens.front().c_str()) == 0);
+            tokens.pop_front();
+            Assert::IsTrue(strcmp("Ashburton", tokens.front().c_str()) == 0);
+            tokens.pop_front();
+            Assert::IsTrue(strcmp("VIC", tokens.front().c_str()) == 0);
+            tokens.pop_front();
+            Assert::IsTrue(strcmp("Australia", tokens.front().c_str()) == 0);
+            tokens.pop_front();
+
+            Assert::IsTrue(is_null_element[0] == false &&
+                           is_null_element[1] == false &&
+                           is_null_element[2] == false &&
+                           is_null_element[3] == true &&
+                           is_null_element[4] == false &&
+                           is_null_element[5] == false &&
+                           is_null_element[6] == false &&
+                           is_null_element[7] == false );
+        };
 	};
 }
