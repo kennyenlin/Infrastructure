@@ -220,7 +220,7 @@ bool ParseLine(char *p_cstr, std::list<string> &tokens, bool is_null_element[TOK
     return true;
 }
 
-void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
+bool ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
 {
     int error_code = 0;
 
@@ -231,7 +231,10 @@ void ExecuteStatement(char *p_sql_statement, sqlite3 *p_sqlite_module)
     {
         fprintf(stderr, "SQL error: %s\n", p_error_message);
         sqlite3_free(p_error_message);
+        return false;
     }
+
+    return true;
 }
 
 void ParseData(std::ifstream &file_stram, sqlite3 *p_sqlite_module, int &element_index)
