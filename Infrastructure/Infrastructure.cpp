@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "Infrastructure.h"
-#include <iostream>
 #include <string>
 #include <sstream>
 
