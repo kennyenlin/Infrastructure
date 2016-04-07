@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <sstream>
 #include "../Infrastructure/Infrastructure.h"
 
 using namespace System;
@@ -118,6 +119,35 @@ namespace InfrastructureTest
             Assert::IsTrue(ExecuteStatement(p_insert_statement, p_sqlite_module));
 
             sqlite3_close(p_sqlite_module);
+        };
+
+        [TestMethod]
+        void TestMethod_ParseData()
+        {
+            sqlite3 *p_sqlite_module = NULL;
+            Assert::IsTrue(CreateDatabase(&p_sqlite_module));
+
+            char *p_sql_statement = "CREATE TABLE COFFEE_SHOP("  \
+                                    "ID INT PRIMARY KEY       NOT NULL," \
+                                    "LAT            REAL      NOT NULL," \
+                                    "LNG            REAL      NOT NULL," \
+                                    "NAME           CHAR(50)  NOT NULL," \
+                                    "PHONE          CHAR(50)          ," \
+                                    "ADDRESS        CHAR(200)         ," \
+                                    "CITY           CHAR(50)          ," \
+                                    "STATE          CHAR(50)  NOT NULL," \
+                                    "COUNTRY        CHAR(50)  NOT NULL);";
+
+            Assert::IsTrue(ExecuteStatement(p_sql_statement, p_sqlite_module));
+
+            std::string line;
+            int element_index = 0;
+
+            std::ifstream file_stream_1("coffee_shops-1.csv");
+
+            getline(file_stream_1, line, '\n');
+
+            Assert::IsTrue(ParseData(file_stream_1, p_sqlite_module, element_index));
         };
 	};
 }
